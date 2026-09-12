@@ -120,4 +120,27 @@ public class DocumentRepository {
                 .query(UUID.class)
                 .single();
     }
+    public UUID findCurrentVersionId(UUID fileId) {
+    return jdbcClient
+            .sql("""
+                    SELECT id
+                    FROM file_versions
+                    WHERE file_id = :fileId
+                      AND is_current = TRUE
+                    """)
+            .param("fileId", fileId)
+            .query(UUID.class)
+            .single();
+}
+public String findFileName(UUID fileId) {
+    return jdbcClient
+            .sql("""
+                    SELECT name
+                    FROM files
+                    WHERE id = :fileId
+                    """)
+            .param("fileId", fileId)
+            .query(String.class)
+            .single();
+}
 }
