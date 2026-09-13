@@ -17,13 +17,48 @@ public class ImpactRepository {
         this.jdbcClient = jdbcClient;
     }
 
+    public List<ImpactPredictionResponse> analyze(UUID fileId) {
+
+    return jdbcClient
+            .sql("""
+                    SELECT
+                        affected_file_id,
+                        affected_file_name,
+                        impact_depth,
+                        path_count,
+                        min_confidence,
+                        impact_score,
+                        impact_level,
+                        path,
+                        relationship_path,
+                        provenance_path
+                    FROM analyze_impact(:fileId)
+                    """)
+            .param("fileId", fileId)
+            .query((rs, rowNum) ->
+                    new ImpactPredictionResponse(
+                            rs.getObject("affected_file_id", UUID.class),
+                            rs.getString("affected_file_name"),
+                            rs.getInt("impact_depth"),
+                            rs.getInt("path_count"),
+                            rs.getBigDecimal("min_confidence"),
+                            rs.getBigDecimal("impact_score"),
+                            rs.getString("impact_level"),
+                            rs.getString("path"),
+                            rs.getString("relationship_path"),
+                            rs.getString("provenance_path")
+                    )
+            )
+            .list();
+}
+
     public List<ImpactPredictionResponse> analyzeAndStore(
             UUID changeEventId,
             UUID fileId
     ) {
         List<ImpactPredictionResponse> predictions =
                 jdbcClient
-                        .sql("""
+                            .sql("""
                                 SELECT
                                     affected_file_id,
                                     affected_file_name,
