@@ -33,7 +33,8 @@ public class ImpactRepository {
                                     impact_score,
                                     impact_level,
                                     path,
-                                    relationship_path
+                                    relationship_path,
+                                    provenance_path
                                 FROM analyze_impact(:fileId)
                                 """)
                         .param("fileId", fileId)
@@ -47,7 +48,8 @@ public class ImpactRepository {
                                         rs.getBigDecimal("impact_score"),
                                         rs.getString("impact_level"),
                                         rs.getString("path"),
-                                        rs.getString("relationship_path")
+                                        rs.getString("relationship_path"),
+                                        rs.getString("provenance_path")
                                 )
                         )
                         .list();

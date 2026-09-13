@@ -12,6 +12,7 @@ public record ImpactPredictionResponse(
         BigDecimal impactScore,
         String impactLevel,
         String path,
-        String relationshipPath
+        String relationshipPath,
+        String provenancePath
 ) {
 }
