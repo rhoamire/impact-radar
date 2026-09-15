@@ -13,5 +13,21 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./db:/docker-entrypoint-initdb.d:ro
 
+  backend:
+    build:
+      context: ./backend
+    container_name: impact-radar-backend
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/impact_radar
+      DB_USERNAME: impact_radar
+      DB_PASSWORD: impact_radar
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      OLLAMA_MODEL: gemma4
+    ports:
+      - "8080:8080"
+
 volumes:
   postgres_data:
