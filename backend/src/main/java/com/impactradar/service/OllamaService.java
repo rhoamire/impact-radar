@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
-public class OllamaService {
+public class OllamaService implements GenerationService {
 
     private final RestClient restClient;
     private final String model;

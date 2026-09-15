@@ -13,16 +13,16 @@ import com.impactradar.repository.AIGroundingRepository.ChangeContext;
 public class ChangeSummaryService {
 
     private final AIGroundingRepository groundingRepository;
-    private final OllamaService ollamaService;
+    private final GenerationService generationService;
     private final AIGenerationRepository generationRepository;
 
     public ChangeSummaryService(
             AIGroundingRepository groundingRepository,
-            OllamaService ollamaService,
+            GenerationService generationService,
             AIGenerationRepository generationRepository
     ) {
         this.groundingRepository = groundingRepository;
-        this.ollamaService = ollamaService;
+        this.generationService = generationService;
         this.generationRepository = generationRepository;
     }
 
@@ -64,7 +64,7 @@ public class ChangeSummaryService {
         );
 
         String generated =
-                ollamaService.generate(
+                generationService.generate(
                         systemPrompt,
                         prompt
                 );
@@ -73,7 +73,7 @@ public class ChangeSummaryService {
                 "CHANGE_SUMMARY",
                 changeEventId,
                 null,
-                ollamaService.model(),
+                generationService.model(),
                 prompt,
                 generated
         );

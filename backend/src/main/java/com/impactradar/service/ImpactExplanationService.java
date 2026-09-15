@@ -13,16 +13,16 @@ import com.impactradar.repository.AIGroundingRepository.ImpactContext;
 public class ImpactExplanationService {
 
     private final AIGroundingRepository groundingRepository;
-    private final OllamaService ollamaService;
+    private final GenerationService generationService;
     private final AIGenerationRepository generationRepository;
 
     public ImpactExplanationService(
             AIGroundingRepository groundingRepository,
-            OllamaService ollamaService,
+            GenerationService generationService,
             AIGenerationRepository generationRepository
     ) {
         this.groundingRepository = groundingRepository;
-        this.ollamaService = ollamaService;
+        this.generationService = generationService;
         this.generationRepository = generationRepository;
     }
 
@@ -102,7 +102,7 @@ public class ImpactExplanationService {
         );
 
         String generated =
-                ollamaService.generate(
+                generationService.generate(
                         systemPrompt,
                         prompt
                 );
@@ -111,7 +111,7 @@ public class ImpactExplanationService {
                 "IMPACT_EXPLANATION",
                 changeEventId,
                 affectedFileId,
-                ollamaService.model(),
+                generationService.model(),
                 prompt,
                 generated
         );

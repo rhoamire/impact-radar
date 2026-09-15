@@ -2,20 +2,34 @@ package com.impactradar.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
-public class EmbeddingService {
+public class EmbeddingService implements EmbeddingProvider {
 
     private final RestClient restClient;
 
-    public EmbeddingService() {
+        public EmbeddingService(
+                @Value("${impact-radar.ollama.base-url}") String baseUrl
+        ) {
         this.restClient = RestClient.builder()
-                .baseUrl("http://localhost:11434")
+                .baseUrl(baseUrl)
                 .build();
-    }
+        }
 
+    @Override
+        public String model() {
+        return "all-minilm";
+        }
+
+        @Override
+        public int dimensions() {
+        return 384;
+        }
+
+    @Override
     public List<Float> embed(String text) {
         EmbedRequest request = new EmbedRequest(
                 "all-minilm",

@@ -3,7 +3,7 @@ import type {
   VersionSummary,
 } from "../types/version"
 
-const API_BASE_URL = "http://localhost:8080"
+import { API_BASE_URL } from "./config"
 
 export async function fetchVersions(
   fileId: string

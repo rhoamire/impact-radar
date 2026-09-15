@@ -1,6 +1,6 @@
 import type { Document } from "../types/document"
 
-const API_BASE_URL = "http://localhost:8080"
+import { API_BASE_URL } from "./config"
 
 export async function fetchDocuments(): Promise<Document[]> {
   const response = await fetch(`${API_BASE_URL}/api/files`)
