@@ -102,19 +102,33 @@ public class SemanticSearchRepository {
                         WHERE fv.is_current = TRUE
                           AND f.id <> :fileId
                           AND NOT EXISTS (
-                              SELECT 1
-                              FROM file_relationships fr
-                              WHERE
-                                  (
-                                      fr.source_file_id = :fileId
-                                      AND fr.target_file_id = f.id
-                                  )
-                                  OR
-                                  (
-                                      fr.source_file_id = f.id
-                                      AND fr.target_file_id = :fileId
-                                  )
-                          )
+                            SELECT 1
+                            FROM file_relationships fr
+                            WHERE
+                                (
+                                    fr.source_file_id = :fileId
+                                    AND fr.target_file_id = f.id
+                                )
+                                OR
+                                (
+                                    fr.source_file_id = f.id
+                                    AND fr.target_file_id = :fileId
+                                )
+                        )
+                        AND NOT EXISTS (
+                            SELECT 1
+                            FROM relationship_overrides ro
+                            WHERE
+                                (
+                                    ro.source_file_id = :fileId
+                                    AND ro.target_file_id = f.id
+                                )
+                                OR
+                                (
+                                    ro.source_file_id = f.id
+                                    AND ro.target_file_id = :fileId
+                                )
+                        )
                         GROUP BY f.id, f.name
                         HAVING MAX(
                             1 - (dc.embedding <=> qe.embedding)
@@ -148,45 +162,51 @@ public class SemanticSearchRepository {
     ) {
         jdbcClient
                 .sql("""
-                        INSERT INTO relationship_candidates (
-                            source_file_id,
-                            target_file_id,
-                            source_version_id,
-                            target_version_id,
-                            similarity,
-                            suggested_relationship_type,
-                            confidence,
-                            evidence,
-                            model_name,
-                            status
-                        )
-                        VALUES (
-                            :sourceFileId,
-                            :targetFileId,
-                            :sourceVersionId,
-                            :targetVersionId,
-                            :similarity,
-                            CAST(:suggestedRelationshipType AS relationship_type),
-                            :confidence,
-                            :evidence,
-                            :modelName,
-                            'CANDIDATE'
-                        )
-                        ON CONFLICT (
-                            source_file_id,
-                            target_file_id,
-                            source_version_id,
-                            target_version_id
-                        )
-                        DO UPDATE SET
-                            similarity = EXCLUDED.similarity,
-                            suggested_relationship_type =
-                                EXCLUDED.suggested_relationship_type,
-                            confidence = EXCLUDED.confidence,
-                            evidence = EXCLUDED.evidence,
-                            model_name = EXCLUDED.model_name,
-                            status = 'CANDIDATE'
-                        """)
+                INSERT INTO relationship_candidates (
+                    source_file_id,
+                    target_file_id,
+                    source_version_id,
+                    target_version_id,
+                    similarity,
+                    suggested_relationship_type,
+                    confidence,
+                    evidence,
+                    model_name,
+                    status
+                )
+                SELECT
+                    :sourceFileId,
+                    :targetFileId,
+                    :sourceVersionId,
+                    :targetVersionId,
+                    :similarity,
+                    CAST(:suggestedRelationshipType AS relationship_type),
+                    :confidence,
+                    :evidence,
+                    :modelName,
+                    'CANDIDATE'
+                WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM relationship_overrides ro
+                    WHERE
+                        ro.source_file_id = :sourceFileId
+                        AND ro.target_file_id = :targetFileId
+                )
+                ON CONFLICT (
+                    source_file_id,
+                    target_file_id,
+                    source_version_id,
+                    target_version_id
+                )
+                DO UPDATE SET
+                    similarity = EXCLUDED.similarity,
+                    suggested_relationship_type =
+                        EXCLUDED.suggested_relationship_type,
+                    confidence = EXCLUDED.confidence,
+                    evidence = EXCLUDED.evidence,
+                    model_name = EXCLUDED.model_name,
+                    status = 'CANDIDATE'
+                """)
                 .param("sourceFileId", sourceFileId)
                 .param("targetFileId", targetFileId)
                 .param("sourceVersionId", sourceVersionId)

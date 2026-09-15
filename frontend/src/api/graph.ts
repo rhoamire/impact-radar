@@ -1,0 +1,19 @@
+import type { ImpactGraphResponse } from "../types/graph"
+
+const API_BASE_URL = "http://localhost:8080"
+
+export async function fetchGraph(
+  fileId: string
+): Promise<ImpactGraphResponse> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/files/${fileId}/graph`
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch graph: ${response.status}`
+    )
+  }
+
+  return response.json()
+}

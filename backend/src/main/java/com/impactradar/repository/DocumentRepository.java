@@ -1,5 +1,6 @@
 package com.impactradar.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -7,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import com.impactradar.dto.FileResponse;
 import com.impactradar.model.FileVersion;
 
 @Repository
@@ -142,5 +144,20 @@ public String findFileName(UUID fileId) {
             .param("fileId", fileId)
             .query(String.class)
             .single();
+}
+public List<FileResponse> findAllFiles() {
+    return jdbcClient
+        .sql("""
+            SELECT id, name
+            FROM files
+            ORDER BY name
+            """)
+        .query((rs, rowNum) ->
+            new FileResponse(
+                rs.getObject("id", UUID.class),
+                rs.getString("name")
+            )
+        )
+        .list();
 }
 }

@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@layer base {
+  @import "@xyflow/react/dist/style.css";
+}
+
+/*
+ * Impact Radar React Flow theme
+ */
+
+.react-flow {
+  --xy-controls-button-background-color-default: #0f172a;
+  --xy-controls-button-background-color-hover-default: #1e293b;
+
+  --xy-controls-button-color-default: #94a3b8;
+  --xy-controls-button-color-hover-default: #f8fafc;
+
+  --xy-controls-button-border-color-default: #334155;
+
+  --xy-minimap-background-color-default: #0f172a;
+  --xy-minimap-mask-background-color-default: rgba(2, 6, 23, 0.72);
+
+  --xy-background-pattern-dots-color-default: #1e293b;
+}
+
+.react-flow__controls {
+  border: 1px solid #334155;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.react-flow__controls-button {
+  width: 32px;
+  height: 32px;
+  background: #0f172a;
+  border-bottom: 1px solid #334155;
+}
+
+.react-flow__controls-button:hover {
+  background: #1e293b;
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none;
+}
+
+.react-flow__controls-button svg {
+  fill: #94a3b8;
+}
+
+.react-flow__controls-button:hover svg {
+  fill: #f8fafc;
+}
+
+.react-flow__minimap {
+  background: #111827 !important;
+  border: 1px solid #334155;
+}
+
+.react-flow__minimap-mask {
+  fill: rgba(15, 23, 42, 0.65);
+}
+
+.react-flow__minimap-node {
+  stroke: #e2e8f0;
+  stroke-width: 1.5px;
+}
